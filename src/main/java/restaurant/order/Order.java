@@ -64,4 +64,12 @@ public class Order {
         }
         throw new ItemNotFoundException("Item not in the order: " + itemName);
     }
+
+    public double getTotal() {
+        double total = 0;
+        for (OrderItem item : items) {
+            total += item.getSubtotal();
+        }
+        return total;
+    }
 }

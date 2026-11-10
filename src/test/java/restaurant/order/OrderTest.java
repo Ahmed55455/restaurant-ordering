@@ -90,4 +90,27 @@ class OrderTest {
         assertThrows(UnsupportedOperationException.class,
                 () -> order.getItems().clear());
     }
+
+    @Test
+    void getTotal_withMultipleItems_returnsSumOfSubtotals() {
+        order.addItem(new Food("Burger", 12.5), 2);
+        order.addItem(new Drink("Cola", 3.0), 1);
+
+        assertEquals(28.0, order.getTotal());
+    }
+
+    @Test
+    void getTotal_withEmptyOrder_returnsZero() {
+        assertEquals(0.0, order.getTotal());
+    }
+
+    @Test
+    void getTotal_afterRemovingItem_excludesRemovedItem() {
+        order.addItem(new Food("Burger", 12.5), 2);
+        order.addItem(new Drink("Cola", 3.0), 1);
+
+        order.removeItem("Cola");
+
+        assertEquals(25.0, order.getTotal());
+    }
 }
