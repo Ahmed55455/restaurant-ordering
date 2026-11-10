@@ -14,6 +14,7 @@ public class Order {
     private final String id;
     private final Customer customer;
     private final List<OrderItem> items = new ArrayList<>();
+    private OrderState state = new NewOrderState();
 
     public Order(String id, Customer customer) {
         if (id == null || id.isBlank()) {
@@ -34,11 +35,43 @@ public class Order {
         return customer;
     }
 
+    public String getStatus() {
+        return state.getName();
+    }
+
     public List<OrderItem> getItems() {
         return Collections.unmodifiableList(items);
     }
 
+    public double getTotal() {
+        double total = 0;
+        for (OrderItem item : items) {
+            total += item.getSubtotal();
+        }
+        return total;
+    }
+
     public void addItem(MenuItem menuItem, int quantity) {
+        state.addItem(this, menuItem, quantity);
+    }
+
+    public void removeItem(String itemName) {
+        state.removeItem(this, itemName);
+    }
+
+    public void markPaid() {
+        state.markPaid(this);
+    }
+
+    public void cancel() {
+        state.cancel(this);
+    }
+
+    void setState(OrderState newState) {
+        this.state = newState;
+    }
+
+    void applyAddItem(MenuItem menuItem, int quantity) {
         if (menuItem == null) {
             throw new RestaurantException("Cannot add a null item to the order");
         }
@@ -55,7 +88,7 @@ public class Order {
         items.add(new OrderItem(menuItem, quantity));
     }
 
-    public void removeItem(String itemName) {
+    void applyRemoveItem(String itemName) {
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).getMenuItem().getName().equalsIgnoreCase(itemName)) {
                 items.remove(i);
@@ -63,13 +96,5 @@ public class Order {
             }
         }
         throw new ItemNotFoundException("Item not in the order: " + itemName);
-    }
-
-    public double getTotal() {
-        double total = 0;
-        for (OrderItem item : items) {
-            total += item.getSubtotal();
-        }
-        return total;
     }
 }
