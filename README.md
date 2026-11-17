@@ -46,7 +46,8 @@ src/test/java/restaurant
 | 2026-11-10 | `Order`: add and remove items + tests | Done |
 | 2026-11-10 | `Order.getTotal` + tests | Done |
 | 2026-11-10 | State pattern for the order and cancel + tests | Done |
-| | Payment with Strategy pattern (cash and card) | Planned |
+| 2026-11-17 | `PaymentStrategy`, `PaymentResult`, `CashPayment` + tests | Done |
+| | `CardPayment` and linking payment to `Order` | Planned |
 | | `MenuItemFactory` (Factory pattern) | Planned |
 | | Test gap review, SOLID review, UML, final report | Planned |
 
