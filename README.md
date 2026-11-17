@@ -19,11 +19,13 @@ src/main/java/restaurant
 ├── customer    Customer
 ├── exception   RestaurantException (base) + 6 specific exceptions
 ├── menu        MenuItem (abstract), Food, Drink, Dessert, Menu
-└── order       OrderItem, Order, OrderState (+ New, Paid, Cancelled)
+├── order       OrderItem, Order, OrderState (+ New, Paid, Cancelled)
+└── payment     PaymentStrategy, PaymentResult, CashPayment
 src/test/java/restaurant
 ├── customer    CustomerTest
 ├── menu        MenuItemTest, MenuTest
-└── order       OrderItemTest, OrderTest, OrderStateTest
+├── order       OrderItemTest, OrderTest, OrderStateTest
+└── payment     CashPaymentTest
 ```
 
 ## Design decisions so far
@@ -31,7 +33,8 @@ src/test/java/restaurant
 - **`MenuItem` is abstract.** Name and price validation live in one place, and `Food`, `Drink` and `Dessert` only define their category.
 - **Encapsulation.** `Menu.getItems()` and `Order.getItems()` return unmodifiable lists, and `Customer`, `MenuItem` and `OrderItem` are immutable.
 - **Order lines are merged.** Adding the same item twice increases the quantity of one line instead of creating a duplicate line.
-- **State pattern for orders.** `Order` delegates `addItem`, `removeItem`, `markPaid` and `cancel` to its current state (`NewOrderState`, `PaidOrderState`, `CancelledOrderState`). This replaces scattered `if (paid)` checks: each state decides what is allowed, and adding a new state does not change `Order`.
+- **State pattern for orders.** `Order` delegates `addItem`, `removeItem`, `markPaid` and `cancel` to its current state (`NewOrderState`, `PaidOrderState`, `CancelledOrderState`). Each state decides what is allowed, and adding a new state does not change `Order`.
+- **Strategy pattern for payment.** Each payment method implements `PaymentStrategy`. Cash is accepted when the amount given covers the total, and the change is returned. New payment methods can be added without changing existing code.
 
 ## Progress log
 
@@ -52,6 +55,5 @@ src/test/java/restaurant
 | | Test gap review, SOLID review, UML, final report | Planned |
 
 ## Current status
-- 49 unit tests, all passing.
-- Exceptions thrown so far: `RestaurantException`, `ItemNotFoundException`, `InvalidQuantityException`, `EmptyOrderException`, `OrderAlreadyPaidException`, `OrderCancelledException`.
-- Exception not thrown yet (it will be once payment exists): `InvalidPaymentException`.
+- 54 unit tests, all passing.
+- Exceptions thrown so far: `RestaurantException`, `ItemNotFoundException`, `InvalidQuantityException`, `EmptyOrderException`, `OrderAlreadyPaidException`, `OrderCancelledException`, `InvalidPaymentException`.
