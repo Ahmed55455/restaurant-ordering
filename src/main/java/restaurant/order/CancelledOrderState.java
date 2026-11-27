@@ -21,8 +21,13 @@ class CancelledOrderState implements OrderState {
     }
 
     @Override
-    public void markPaid(Order order) {
+    public void validatePayable(Order order) {
         throw new OrderCancelledException("Cannot pay a cancelled order: " + order.getId());
+    }
+
+    @Override
+    public void markPaid(Order order) {
+        validatePayable(order);
     }
 
     @Override

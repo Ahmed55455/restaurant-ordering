@@ -21,8 +21,13 @@ class PaidOrderState implements OrderState {
     }
 
     @Override
-    public void markPaid(Order order) {
+    public void validatePayable(Order order) {
         throw new OrderAlreadyPaidException("Order is already paid: " + order.getId());
+    }
+
+    @Override
+    public void markPaid(Order order) {
+        validatePayable(order);
     }
 
     @Override

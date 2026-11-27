@@ -5,6 +5,8 @@ import restaurant.exception.InvalidQuantityException;
 import restaurant.exception.ItemNotFoundException;
 import restaurant.exception.RestaurantException;
 import restaurant.menu.MenuItem;
+import restaurant.payment.PaymentResult;
+import restaurant.payment.PaymentStrategy;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +59,16 @@ public class Order {
 
     public void removeItem(String itemName) {
         state.removeItem(this, itemName);
+    }
+
+    public PaymentResult pay(PaymentStrategy strategy) {
+        if (strategy == null) {
+            throw new RestaurantException("Payment method must not be null");
+        }
+        state.validatePayable(this);
+        PaymentResult result = strategy.pay(getTotal());
+        state.markPaid(this);
+        return result;
     }
 
     public void markPaid() {

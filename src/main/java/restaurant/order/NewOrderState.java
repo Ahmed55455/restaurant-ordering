@@ -21,10 +21,15 @@ class NewOrderState implements OrderState {
     }
 
     @Override
-    public void markPaid(Order order) {
+    public void validatePayable(Order order) {
         if (order.getItems().isEmpty()) {
             throw new EmptyOrderException("Cannot pay an empty order: " + order.getId());
         }
+    }
+
+    @Override
+    public void markPaid(Order order) {
+        validatePayable(order);
         order.setState(new PaidOrderState());
     }
 

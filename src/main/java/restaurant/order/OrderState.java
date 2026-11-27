@@ -9,6 +9,8 @@ interface OrderState {
 
     void removeItem(Order order, String itemName);
 
+    void validatePayable(Order order);
+
     void markPaid(Order order);
 
     void cancel(Order order);
