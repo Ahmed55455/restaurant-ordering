@@ -5,13 +5,10 @@ import restaurant.exception.InvalidPaymentException;
 public class CardPayment implements PaymentStrategy {
     public static final double FEE_RATE = 0.02;
 
-    private final String cardNumber;
-
     public CardPayment(String cardNumber) {
         if (cardNumber == null || !cardNumber.matches("\\d{16}")) {
             throw new InvalidPaymentException("Card number must be exactly 16 digits");
         }
-        this.cardNumber = cardNumber;
     }
 
     @Override
