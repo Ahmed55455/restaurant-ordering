@@ -1,0 +1,113 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+package restaurant.exception {
+  class RestaurantException
+  class ItemNotFoundException
+  class InvalidQuantityException
+  class EmptyOrderException
+  class OrderAlreadyPaidException
+  class OrderCancelledException
+  class InvalidPaymentException
+  RuntimeException <|-- RestaurantException
+  RestaurantException <|-- ItemNotFoundException
+  RestaurantException <|-- InvalidQuantityException
+  RestaurantException <|-- EmptyOrderException
+  RestaurantException <|-- OrderAlreadyPaidException
+  RestaurantException <|-- OrderCancelledException
+  RestaurantException <|-- InvalidPaymentException
+}
+
+package restaurant.menu {
+  abstract class MenuItem {
+    -name: String
+    -price: double
+    +getName(): String
+    +getPrice(): double
+    {abstract} +getCategory(): String
+  }
+  class Food
+  class Drink
+  class Dessert
+  class Menu {
+    +addItem(item: MenuItem)
+    +getItems(): List<MenuItem>
+    +findItem(name: String): MenuItem
+    +getItemsByCategory(category: String): List<MenuItem>
+  }
+  class MenuItemFactory <<Factory>> {
+    +{static} create(type, name, price): MenuItem
+  }
+  MenuItem <|-- Food
+  MenuItem <|-- Drink
+  MenuItem <|-- Dessert
+  Menu o-- "0..*" MenuItem
+  MenuItemFactory ..> MenuItem : creates
+}
+
+package restaurant.customer {
+  class Customer {
+    -id: String
+    -name: String
+  }
+}
+
+package restaurant.order {
+  class OrderItem {
+    -quantity: int
+    +getSubtotal(): double
+  }
+  class Order {
+    -id: String
+    -state: OrderState
+    +addItem(item: MenuItem, qty: int)
+    +removeItem(name: String)
+    +getTotal(): double
+    +pay(strategy: PaymentStrategy): PaymentResult
+    +cancel()
+    +getStatus(): String
+  }
+  interface OrderState <<State>> {
+    +addItem()
+    +removeItem()
+    +validatePayable()
+    +markPaid()
+    +cancel()
+  }
+  class NewOrderState
+  class PaidOrderState
+  class CancelledOrderState
+  OrderState <|.. NewOrderState
+  OrderState <|.. PaidOrderState
+  OrderState <|.. CancelledOrderState
+  Order o-- "0..*" OrderItem
+  OrderItem --> MenuItem
+  Order --> Customer
+  Order --> OrderState : current state
+}
+
+package restaurant.payment {
+  interface PaymentStrategy <<Strategy>> {
+    +getMethodName(): String
+    +pay(orderTotal: double): PaymentResult
+  }
+  class CashPayment {
+    -amountGiven: double
+  }
+  class CardPayment {
+    +{static} FEE_RATE = 0.02
+  }
+  class PaymentResult {
+    -method: String
+    -amountCharged: double
+    -change: double
+  }
+  PaymentStrategy <|.. CashPayment
+  PaymentStrategy <|.. CardPayment
+  PaymentStrategy ..> PaymentResult : returns
+}
+
+Order ..> PaymentStrategy : uses
+@enduml
